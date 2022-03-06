@@ -17,6 +17,10 @@ on:
         type: string
         description: 'AWS Region, e.g. us-east-2'
         required: true
+      adapter-image:
+        type: string
+        description: 'Adapter image to pull for testing'
+        required: false
       test-image:
         type: string
         description: 'Image to use for testing'
@@ -27,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
+        if: '!inputs.adapter-image'
         uses: actions/checkout@v2
 
       - name: Configure AWS credentials
@@ -39,6 +44,10 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Docker pull adapter image
+        if: 'inputs.adapter-image'
+        run: docker pull ${{ inputs.adapter-image }}
 
       - name: Docker pull testing image
         run: docker pull ${{ inputs.test-image }}
@@ -59,10 +68,16 @@ jobs:
           EOF
 
       - name : Build image
+        if: '!inputs.adapter-image'
         run: docker build --file ./Dockerfile --tag adapter .
 
       - name: Launch container
-        run: docker run -d --name=adapter --hostname=adapter --net=adapter-test-net --env-file .env -t adapter
+        if: '!inputs.adapter-image'
+        run: docker run -d --name=adapter --hostname=adapter --net=adapter-test-net --env-file .env adapter
+
+      - name: Launch container
+        if: 'inputs.adapter-image'
+        run: docker run -d --name=adapter --hostname=adapter --net=adapter-test-net --env-file .env ${{ inputs.adapter-image }}
 
       - name: run mongodb
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
