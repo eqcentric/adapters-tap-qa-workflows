@@ -2,22 +2,20 @@ name: Test adapter
 
 on:
   workflow_call:
-    inputs:
-      aws-access-key-id:
-        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
         description: 'AWS Access Key ID'
         required: true
-      aws-secret-access-key:
-        type: string
+      AWS_SECRET_ACCESS_KEY:
         description: 'AWS Secret Access Key'
         required: true
+      ADAPTER_CREDENTIALS:
+        description: 'Adapter credentials in JSON format'
+        required: true
+    inputs:
       aws-region:
         type: string
         description: 'AWS Region, e.g. us-east-2'
-        required: true
-      adapter-credentials:
-        type: string
-        description: 'Adapter credentials in JSON format'
         required: true
       test-image:
         type: string
@@ -34,8 +32,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ inputs.aws-access-key-id }}
-          aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.aws-region }}
 
       - name: Login to Amazon ECR
@@ -43,7 +41,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Docker pull testing image
-        run: docker pull {{inputs.test-image}}:latest
+        run: docker pull ${{ inputs.test-image }}
 
       - name: Pull mongodb
         run: docker pull mongo
@@ -54,7 +52,7 @@ jobs:
       - name: Create env file
         run: |
           cat > .env << EOF
-            ADAPTER_CREDENTIALS=${{inputs.adapter-credentials}}
+            ADAPTER_CREDENTIALS=${{ secrets.ADAPTER_CREDENTIALS }}
             ADAPTER_URL=http://adapter:80
             API_URL=http://test:3000
             MONGO_DSN=mongodb://mongo:27017
@@ -70,4 +68,4 @@ jobs:
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: Run testing with testing image
-        run: docker run --name=test --hostname=test --net=adapter-test-net --env-file .env -t {{inputs.test-image}}:latest
+        run: docker run --name=test --hostname=test --net=adapter-test-net --env-file .env -t ${{ inputs.test-image }}
