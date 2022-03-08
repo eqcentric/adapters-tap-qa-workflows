@@ -25,6 +25,10 @@ on:
         type: string
         description: 'Image to use for testing'
         required: true
+      test-options:
+        type: string
+        description: 'Jest CLI arguments'
+        required: false
 
 jobs:
   integration-test:
@@ -83,4 +87,4 @@ jobs:
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: Run testing with testing image
-        run: docker run --name=test --hostname=test --net=adapter-test-net --env-file .env -t ${{ inputs.test-image }}
+        run: docker run --name=test --hostname=test --net=adapter-test-net --env-file .env -t ${{ inputs.test-image }} {{ inputs.test-options }}
