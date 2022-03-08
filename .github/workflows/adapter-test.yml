@@ -29,6 +29,10 @@ on:
         type: string
         description: 'Jest CLI arguments'
         required: false
+      env-file:
+        type: string
+        description: '.env file contents'
+        required: false
 
 jobs:
   integration-test:
@@ -69,6 +73,7 @@ jobs:
             ADAPTER_URL=http://adapter:80
             API_URL=http://test:3000
             MONGO_DSN=mongodb://mongo:27017
+            ${{ inputs.env-file }}
           EOF
 
       - name : Build image
