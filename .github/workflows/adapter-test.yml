@@ -92,4 +92,13 @@ jobs:
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: Run testing with testing image
-        run: docker run --name=test --hostname=test --net=adapter-test-net --env-file .env -t ${{ inputs.test-image }} {{ inputs.test-options }}
+        shell: bash {0}
+        run: |
+          docker run --name=test --hostname=test --net=adapter-test-net --env-file .env -t ${{ inputs.test-image }} {{ inputs.test-options }}
+          status=$?
+          if test $status -eq 1
+          then
+            echo '--- Container logs ---'
+            docker logs adapter
+            exit 1
+          fi
