@@ -33,6 +33,10 @@ on:
         type: string
         description: '.env file contents'
         required: false
+      skipping:
+        type: string
+        description: 'skipping'
+        required: false
 
 jobs:
   integration-test:
@@ -74,10 +78,11 @@ jobs:
             API_URL=http://test:3000
             MONGO_DSN=mongodb://mongo:27017
             ${{ inputs.env-file }}
+            ${{ skipping }}
           EOF
       - name: View env
         run : cat .env
-        
+
       - name : Build image
         if: '!inputs.adapter-image'
         run: docker build --file ./Dockerfile --tag adapter .
