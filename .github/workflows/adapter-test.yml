@@ -75,7 +75,9 @@ jobs:
             MONGO_DSN=mongodb://mongo:27017
             ${{ inputs.env-file }}
           EOF
-
+      - name: View env
+        run : cat .env
+        
       - name : Build image
         if: '!inputs.adapter-image'
         run: docker build --file ./Dockerfile --tag adapter .
