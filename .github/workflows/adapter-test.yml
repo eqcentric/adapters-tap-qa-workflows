@@ -36,7 +36,7 @@ on:
       skipping:
         type: string
         description: 'skipping'
-        required: false
+        required: true
 
 jobs:
   integration-test:
