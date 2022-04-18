@@ -78,7 +78,7 @@ jobs:
             API_URL=http://test:3000
             MONGO_DSN=mongodb://mongo:27017
             ${{ inputs.env-file }}
-            ${{ skipping }}
+            ${{ inputs.skipping }}
           EOF
       - name: View env
         run : cat .env
