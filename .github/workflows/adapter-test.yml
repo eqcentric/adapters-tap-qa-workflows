@@ -79,7 +79,6 @@ jobs:
             MONGO_DSN=mongodb://mongo:27017
             skipping=${{ inputs.skipping }}
             ${{ inputs.env-file }}
-            ${{ inputs.skipping }}
           EOF
       - name: View env
         run : cat .env
