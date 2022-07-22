@@ -12,7 +12,7 @@ on:
       ADAPTER_CREDENTIALS:
         description: 'Adapter credentials in JSON format'
         required: true
-      GITHUB_TOKEN:
+      GIT_PRIVATE_TOKEN:
         description: 'github token to install makini vendor'
         required: true   
     inputs:
@@ -83,8 +83,8 @@ jobs:
 
       - name : Build image
         if: '!inputs.adapter-image'
-        run: export GTHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        run: docker build --build-arg GTHUB_TOKEN --file ./Dockerfile --tag adapter .
+        run: export GIT_PRIVATE_TOKEN=${{ secrets.GIT_PRIVATE_TOKEN }}
+        run: docker build --build-arg GIT_PRIVATE_TOKEN --file ./Dockerfile --tag adapter .
 
       - name: Launch container
         if: '!inputs.adapter-image'
