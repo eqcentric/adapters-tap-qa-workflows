@@ -83,8 +83,9 @@ jobs:
 
       - name : Build image
         if: '!inputs.adapter-image'
-        run: export GIT_PRIVATE_TOKEN=${{ secrets.GIT_PRIVATE_TOKEN }}
-        run: docker build --build-arg GIT_PRIVATE_TOKEN --file ./Dockerfile --tag adapter .
+        run: |
+          export GIT_PRIVATE_TOKEN=${{ secrets.GIT_PRIVATE_TOKEN }}
+          docker build --build-arg GIT_PRIVATE_TOKEN --file ./Dockerfile --tag adapter .
 
       - name: Launch container
         if: '!inputs.adapter-image'
