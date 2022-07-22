@@ -14,7 +14,7 @@ on:
         required: true
       GITHUB_TOKEN:
         description: 'github token to install makini vendor'
-        required: false   
+        required: true   
     inputs:
       aws-region:
         type: string
