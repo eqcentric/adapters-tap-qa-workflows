@@ -14,7 +14,10 @@ on:
         required: true
       GIT_PRIVATE_TOKEN:
         description: 'github token to install makini vendor'
-        required: true   
+        required: true
+      SANDBOX_CREDENTIALS:
+        description: 'sandbox credentials from makini'
+        required: true
     inputs:
       aws-region:
         type: string
@@ -85,7 +88,8 @@ jobs:
         if: '!inputs.adapter-image'
         run: |
           export GIT_PRIVATE_TOKEN=${{ secrets.GIT_PRIVATE_TOKEN }}
-          docker build --build-arg GIT_PRIVATE_TOKEN --file ./Dockerfile --tag adapter .
+          export SANDBOX_CREDENTIALS=${{ secrets.SANDBOX_CREDENTIALS }}
+          docker build --build-arg GIT_PRIVATE_TOKEN --build-arg SANDBOX_CREDENTIALS --file ./Dockerfile --tag adapter .
 
       - name: Launch container
         if: '!inputs.adapter-image'
