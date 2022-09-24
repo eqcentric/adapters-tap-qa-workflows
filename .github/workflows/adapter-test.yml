@@ -17,7 +17,7 @@ on:
         required: true
       SANDBOX_CREDENTIALS:
         description: 'sandbox credentials from makini'
-        required: true
+        required: false
     inputs:
       aws-region:
         type: string
