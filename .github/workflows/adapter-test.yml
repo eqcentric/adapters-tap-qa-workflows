@@ -108,7 +108,7 @@ jobs:
       - name: Waiting app to be ready
         if: 'inputs.waiting-app-start'
         run: |
-          for i in {1..15}; do 
+          for i in {1..30}; do 
             timeout 1 curl -I -s adapter:80 |grep 200 >/dev/null  && exit 0 || true; 
             sleep 2; 
             #
