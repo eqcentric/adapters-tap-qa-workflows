@@ -103,8 +103,20 @@ jobs:
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: show all docker containers
+        run: sleep 5 && docker ps
+        
+      - name: Waiting app to be ready
         if: 'inputs.waiting-app-start'
-        run: sleep 30 && docker ps
+        run: |
+          for i in {1..15}; do 
+            timeout 1 curl -I -s adapter:80 |grep 200 >/dev/null  && exit 0 || true; 
+            sleep 2; 
+            #
+            if [[ "$i" == 15 ]]; then
+              echo "App FAILED to start! Exit now.";
+              exit 1
+            fi
+          done
 
       - name: Run testing with testing image
         shell: bash {0}
