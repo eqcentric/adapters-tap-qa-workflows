@@ -101,9 +101,9 @@ jobs:
       - name: show all docker containers
         run: docker ps
 
-#      - name: health check adapter container
-#        run: curl -i 192.168.10.2:80
-      
+      - name: health check adapter container
+        run: curl -i 192.168.10.2:80
+
       - name: Run testing with testing image
         shell: bash {0}
         run: |
