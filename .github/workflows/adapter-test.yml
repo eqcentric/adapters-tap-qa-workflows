@@ -99,7 +99,7 @@ jobs:
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: show all docker containers
-        run: sleep 5 && docker ps; echo "Waiting for debugging..."; sleep 1000; echo "Done debugging."; 
+        run: sleep 60 && docker ps
 
       - name: Run testing with testing image
         shell: bash {0}
