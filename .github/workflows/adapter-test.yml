@@ -89,7 +89,7 @@ jobs:
 
       - name: Launch container
         if: '!inputs.adapter-image'
-        run: docker run -d --name=adapter --hostname=adapter --net=adapter-test-net --env-file .env adapter
+        run: docker run -d --name=adapter --hostname=adapter -p 80:80 --net=adapter-test-net --env-file .env adapter
 
       - name: Launch container
         if: 'inputs.adapter-image'
