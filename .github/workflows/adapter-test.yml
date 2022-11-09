@@ -109,7 +109,7 @@ jobs:
         if: 'inputs.waiting-app-start'
         run: |
           for i in {1..30}; do 
-            timeout 1 curl -I -s adapter:80 |grep 200 >/dev/null  && exit 0 || true; 
+            timeout 1 curl -I -s localhost:80 |grep 200 >/dev/null  && exit 0 || true; 
             sleep 2; 
             #
             if [[ "$i" == 15 ]]; then
