@@ -37,6 +37,7 @@ on:
         description: '.env file contents'
         required: false
       waiting-app-start:
+        type: boolean
         description: 'waiting Nodejs application starts'
         required: false
 
