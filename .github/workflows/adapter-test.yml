@@ -36,6 +36,9 @@ on:
         type: string
         description: '.env file contents'
         required: false
+      waiting-app-start:
+        description: 'waiting Nodejs application starts'
+        required: false
 
 jobs:
   integration-test:
@@ -99,7 +102,8 @@ jobs:
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: show all docker containers
-        run: sleep 60 && docker ps
+        if: 'inputs.waiting-app-start'
+        run: sleep 30 && docker ps
 
       - name: Run testing with testing image
         shell: bash {0}
