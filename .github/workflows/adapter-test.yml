@@ -89,7 +89,7 @@ jobs:
 
       - name: Launch container
         if: '!inputs.adapter-image'
-        run: docker run -d --name=adapter --hostname=adapter -p 80:80 --net=adapter-test-net --env-file .env adapter
+        run: docker run -d --name=adapter --hostname=adapter -p 192.168.10.2:80:80 --net=adapter-test-net --env-file .env adapter
 
       - name: Launch container
         if: 'inputs.adapter-image'
@@ -102,7 +102,7 @@ jobs:
         run: docker ps
 
       - name: health check adapter container
-        run: curl -i  adapter:80
+        run: curl -i 192.168.10.2:80
       - name: Run testing with testing image
         shell: bash {0}
         run: |
