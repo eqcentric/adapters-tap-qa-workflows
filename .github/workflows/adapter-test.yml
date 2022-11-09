@@ -102,7 +102,7 @@ jobs:
         run: docker ps
 
       - name: health check adapter container
-        run: curl -i localhost:80
+        run: curl -i  adapter:80
       - name: Run testing with testing image
         shell: bash {0}
         run: |
