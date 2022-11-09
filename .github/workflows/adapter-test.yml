@@ -99,7 +99,7 @@ jobs:
         run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: show all docker containers
-        runn: docker ps
+        run: docker ps
 
       - name: Run testing with testing image
         shell: bash {0}
