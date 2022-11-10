@@ -109,12 +109,12 @@ jobs:
         if: 'inputs.waiting-app-start'
 #         run: sleep 60
         run: |
-          for i in {1..30}; do
+          for i in {1..60}; do
            timeout 1 curl -I -s localhost:80 |grep 200 >/dev/null  && exit 0 || true;
            sleep 2;
            #
-           if [[ "$i" == 15 ]]; then
-             echo "App FAILED to start! Exit now.";
+           if [[ "$i" == 30 ]]; then
+             echo "Err: Timed out waiting for app to be ready. Exit now.";
              exit 1
            fi
           done
