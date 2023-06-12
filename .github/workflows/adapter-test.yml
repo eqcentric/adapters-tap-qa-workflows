@@ -101,7 +101,7 @@ jobs:
         run: docker run -d --name=adapter --hostname=adapter --net=adapter-test-net --env-file .env ${{ inputs.adapter-image }}
 
       - name: run mongodb
-        run: docker run -d --hostname=mongo --net=adapter-test-net -t mongo
+        run: docker run -d --name=mongodb --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: show all docker containers
         run: sleep 5 && docker ps
@@ -115,8 +115,10 @@ jobs:
            sleep 2;
            #
            if [[ "$i" == 30 ]]; then
-             echo "Err: Timed out waiting for app to be ready. Exit now.";
-             exit 1
+             echo "Err: Timed out waiting for app to be ready.";
+             echo "Last logs seeing in \"adapter\" container: "
+             docker logs adapter
+             echo "Exit now."; exit 1
            fi
           done
 
