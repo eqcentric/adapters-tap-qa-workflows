@@ -3,23 +3,14 @@ name: Test adapter
 on:
   workflow_call:
     secrets:
-      AWS_ACCESS_KEY_ID:
-        description: 'AWS Access Key ID'
+      AZ_CLIENT_ID:
         required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: 'AWS Secret Access Key'
-        required: true
-      ADAPTER_CREDENTIALS:
-        description: 'Adapter credentials in JSON format'
+      AZ_CLIENT_SECRET:
         required: true
       GIT_PRIVATE_TOKEN:
         description: 'github token to install makini vendor'
         required: true
     inputs:
-      aws-region:
-        type: string
-        description: 'AWS Region, e.g. us-east-2'
-        required: true
       adapter-image:
         type: string
         description: 'Adapter image to pull for testing'
@@ -44,22 +35,17 @@ on:
 jobs:
   integration-test:
     runs-on: [self-hosted]
-    #runs-on: ubuntu-latest
     steps:
+      - name: Login to Azure ACR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.acr-registry }}
+          username: ${{ secrets.AZ_CLIENT_ID }}
+          password: ${{ secrets.AZ_CLIENT_SECRET }}
+
       - name: Checkout code
         if: '!inputs.adapter-image'
         uses: actions/checkout@v2
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.aws-region }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Docker pull adapter image
         if: 'inputs.adapter-image'
@@ -83,6 +69,7 @@ jobs:
             MONGO_DSN=mongodb://mongo:27017
             ${{ inputs.env-file }}
           EOF
+
       - name: View env
         run : cat .env
 
@@ -105,10 +92,9 @@ jobs:
 
       - name: show all docker containers
         run: sleep 5 && docker ps
-        
+
       - name: Waiting app to be ready
         if: 'inputs.waiting-app-start'
-#         run: sleep 60
         run: |
           for i in {1..60}; do
            timeout 1 curl -I -s localhost:80 | grep HTTP |grep 20 && exit 0 || true;
