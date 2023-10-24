@@ -41,7 +41,7 @@ jobs:
       - name: Login to Azure ACR
         uses: docker/login-action@v2
         with:
-          registry: 'makini.azurecr.io/makini-adapters-test'
+          registry: 'makini.azurecr.io'
           username: ${{ secrets.AZ_CLIENT_ID }}
           password: ${{ secrets.AZ_CLIENT_SECRET }}
 
