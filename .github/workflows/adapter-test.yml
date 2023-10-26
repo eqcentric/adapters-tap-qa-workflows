@@ -47,7 +47,7 @@ jobs:
 
       - name: Checkout code
         if: '!inputs.adapter-image'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Docker pull adapter image
         if: 'inputs.adapter-image'
