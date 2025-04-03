@@ -201,7 +201,7 @@ jobs:
           docker cp ./target_postgres_config.json tap-rest:/app/target_postgres_config.json
 
       - name: Start Sync and store data to DB
-        run: docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
+        run: docker exec -i tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
 
       - name: Start aggregate pipeline
         run: |
