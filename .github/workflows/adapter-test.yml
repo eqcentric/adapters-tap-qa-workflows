@@ -86,9 +86,25 @@ jobs:
            fi
           done
 
+      - name: Check if adapter host is reachable
+        run: |
+          for i in {1..30}; do
+            # Test connection to the adapter container
+            if curl -s http://adapter:80; then
+              echo "Adapter is reachable."
+              exit 0
+            fi
+            sleep 2
+            if [[ "$i" == 30 ]]; then
+              echo "Error: Timed out waiting for adapter to be reachable."
+              docker logs adapter
+              exit 1
+            fi
+          done
+
       - name: Write data to json
         run: |
-          API_URL="http://localhost/resolve/singer-config"
+          API_URL="http://adapter/resolve/singer-config"
           OUTPUT_FILE="tap_config.json"
 
           # Make the API call and get the JSON response
