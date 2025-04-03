@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Docker pull dbt image
-        run: docker pull makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
+        run: docker pull makini.azurecr.io/test-dbt:f3ba5e6df6dd7525e6b7cb3ffcfdb14cbe951333
 
       - name: Docker pull tap sync
         run: docker pull makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
@@ -210,7 +210,7 @@ jobs:
             -w /app \
             --rm \
             --name adapter-test-dbt \
-            makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d \
+            makini.azurecr.io/test-dbt:f3ba5e6df6dd7525e6b7cb3ffcfdb14cbe951333 \
             dbt run
 
           # Wait briefly to check the container status
@@ -232,7 +232,7 @@ jobs:
       - name: Show all files in /app/models of the container
         run: |
           docker exec adapter-test-dbt ls -al /app/models
-
+      
       - name: Show all tables in PostgreSQL
         run: |
           docker exec -i postgres bash -c "export PGPASSWORD='postgres'; psql -U postgres -d platform -c '\dt'"
