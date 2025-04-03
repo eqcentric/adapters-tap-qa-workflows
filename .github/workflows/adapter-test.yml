@@ -210,7 +210,8 @@ jobs:
             -w /app \
             --rm \
             --name adapter-test-dbt \
-            makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
+            makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d \
+            dbt run
 
           # Wait briefly to check the container status
           sleep 2
