@@ -119,6 +119,8 @@ jobs:
           # Prepare the payload with ADAPTER_CREDENTIALS
           PAYLOAD=$(jq -n --argjson adapter_credentials "$ADAPTER_CREDENTIALS" \
             '{ADAPTER_CREDENTIALS: $adapter_credentials}')
+          
+          echo "Payload being sent to API: $PAYLOAD"
 
           # Make the API POST request and get the JSON response
           RESPONSE=$(curl -s -w "%{http_code}" -o response.json -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$API_URL")
