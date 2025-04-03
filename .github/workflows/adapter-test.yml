@@ -228,6 +228,10 @@ jobs:
             echo "✅ Container is running successfully!"
           fi
 
+      - name: Show all files in /app/models of the container
+        run: |
+          docker exec adapter-test-dbt ls -al /app/models
+          
       - name: Show all tables in PostgreSQL
         run: |
           docker exec -i postgres bash -c "export PGPASSWORD='postgres'; psql -U postgres -d platform -c '\dt'"
