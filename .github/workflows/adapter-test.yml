@@ -213,7 +213,7 @@ jobs:
             makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
 
           # Wait briefly to check the container status
-          sleep 10
+          sleep 5
 
           # Show logs regardless of the container status
           echo '--- Container logs ---'
