@@ -102,13 +102,25 @@ jobs:
             fi
           done
 
-      - name: Write data to json
+      - name: Write Tap Config to json
         run: |
           API_URL="http://localhost:80/resolve/singer-config"
           OUTPUT_FILE="tap_config.json"
 
-          # Make the API call and get the JSON response
-          RESPONSE=$(curl -s -w "%{http_code}" -o response.json "$API_URL")
+          # Load environment variables from the .env file
+          source .env
+
+          # Ensure ADAPTER_CREDENTIALS is loaded from the .env file
+          if [ -z "$ADAPTER_CREDENTIALS" ]; then
+            echo "Error: ADAPTER_CREDENTIALS is not set in the .env file"
+            exit 1
+          fi
+
+          # Prepare the payload with ADAPTER_CREDENTIALS
+          PAYLOAD="{\"ADAPTER_CREDENTIALS\":\"$ADAPTER_CREDENTIALS\"}"
+
+          # Make the API POST request and get the JSON response
+          RESPONSE=$(curl -s -w "%{http_code}" -o response.json -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$API_URL")
 
           # Capture the HTTP status code
           HTTP_STATUS=$(tail -n 1 <<< "$RESPONSE")
