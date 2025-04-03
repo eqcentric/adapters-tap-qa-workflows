@@ -104,12 +104,11 @@ jobs:
 
       - name: Write Tap Config to json
         run: |
-          source .env
           API_URL="http://localhost:8081/resolve/singer-config"
           OUTPUT_FILE="tap_config.json"
 
           # Load environment variables from the .env file
-          ADAPTER_CREDENTIALS=$(grep '^ADAPTER_CREDENTIALS=' .env | cut -d '=' -f2-)
+          ADAPTER_CREDENTIALS='${{ secrets.ADAPTER_CREDENTIALS }}'
 
           # Ensure ADAPTER_CREDENTIALS is loaded from the .env file
           if [ -z "$ADAPTER_CREDENTIALS" ]; then
