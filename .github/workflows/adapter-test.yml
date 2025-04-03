@@ -88,7 +88,7 @@ jobs:
 
       - name: Write data to json
         run: |
-          API_URL="http://adapter/resolve/singer-config"
+          API_URL="http://localhost/resolve/singer-config"
           OUTPUT_FILE="tap_config.json"
 
           # Make the API call and get the JSON response
