@@ -178,7 +178,7 @@ jobs:
           -e POSTGRES_DB=platform \
           -p 5432:5432 \
           postgres
-
+      
       - name: Run Docker Tap Sync
         run: |
           docker network create --attachable adapter-test-net || true # Create network if it doesn't exist
@@ -190,6 +190,12 @@ jobs:
             -e NODE_ENV=production \
             makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
 
+      - name: Show all docker containers
+        run: sleep 5 && docker ps
+
+      - name: show all files in git runner container
+        run:  
+      
       - name: Start Sync and store data to DB
         run: docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
 
