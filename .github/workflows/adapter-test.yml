@@ -202,11 +202,11 @@ jobs:
 
       - name: Start Sync and store data to DB
         run: docker exec -i tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
-
+      
       - name: Start aggregate pipeline
         run: |
           docker run -d \
-            -v /app/src/dbt_sql:/app/models \
+            -v ./src/dbt_sql:/app/models \
             -w /app \
             --rm \
             --name adapter-test-dbt \
