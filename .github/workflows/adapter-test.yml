@@ -117,7 +117,7 @@ jobs:
           fi
 
           # Prepare the payload with ADAPTER_CREDENTIALS
-          PAYLOAD=$(echo "$ADAPTER_CREDENTIALS" | jq '.')
+          PAYLOAD=$(echo "$ADAPTER_CREDENTIALS" | jq '. + {integrationId: 1}')
 
           echo "Payload being sent to API: $PAYLOAD"
 
