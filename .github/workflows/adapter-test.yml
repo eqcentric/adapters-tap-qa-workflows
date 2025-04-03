@@ -181,7 +181,6 @@ jobs:
       
       - name: Run Docker Tap Sync
         run: |
-          docker network create --attachable adapter-test-net || true # Create network if it doesn't exist
           docker run -d \
             -p 3002:3000 \
             --hostname=tap \
@@ -196,6 +195,11 @@ jobs:
       - name: List files in the working directory
         run: ls -al
       
+      - name: Copy files to tap sync container
+        run: |
+          docker cp /app/tap_config.json tap-rest:/app/tap_config.json
+          docker cp /app/target_postgres_config.json tap-rest:/app/target_postgres_config.json
+
       - name: Start Sync and store data to DB
         run: docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
 
