@@ -10,7 +10,7 @@ on:
       ADAPTER_CREDENTIALS:
         required: true
       GIT_PRIVATE_TOKEN:
-        description: 'github token to install makini vendor'
+        description: 'GitHub token to install makini vendor'
         required: true
     inputs:
       env-file:
@@ -19,7 +19,7 @@ on:
         required: false
       waiting-app-start:
         type: boolean
-        description: 'waiting Nodejs application starts'
+        description: 'Waiting Node.js application to start'
         required: false
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Docker pull dbt image
-      - run : docker pull makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
+        run: docker pull makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
 
       - name: Docker pull tap sync
         run: docker pull makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
@@ -45,8 +45,8 @@ jobs:
       - name: Docker Pull postgres
         run: docker pull postgres
 
-      - name: create a network
-        run: docker network create --driver=bridge --subnet=192.168.10.0/24 --gateway=192.168.10.1 adapter-test-net
+      - name: Create a network
+        run: docker network create --driver=bridge --subnet=192.168.10.0/24 --gateway=192.168.10.1 adapter-test-net || true
 
       - name: Create env file
         run: |
@@ -59,9 +59,9 @@ jobs:
           EOF
 
       - name: View env
-        run : cat .env
+        run: cat .env
 
-      - name : Build adapter image
+      - name: Build adapter image
         run: |
           export GIT_PRIVATE_TOKEN=${{ secrets.GIT_PRIVATE_TOKEN }}
           docker build --build-arg GIT_PRIVATE_TOKEN --file ./Dockerfile --tag adapter .
@@ -69,20 +69,20 @@ jobs:
       - name: Launch adapter container
         run: docker run -d --name=adapter --hostname=adapter -p 80:80 --net=adapter-test-net --env-file .env adapter
 
-      - name: show all docker containers
+      - name: Show all docker containers
         run: sleep 5 && docker ps
 
       - name: Waiting app to be ready
         run: |
           for i in {1..60}; do
-           timeout 1 curl -I -s localhost:80 | grep HTTP |grep 20 && exit 0 || true;
-           sleep 2;
-           #
+           timeout 1 curl -I -s localhost:80 | grep HTTP | grep 20 && exit 0 || true
+           sleep 2
            if [[ "$i" == 30 ]]; then
-             echo "Err: Timed out waiting for app to be ready.";
+             echo "Err: Timed out waiting for app to be ready."
              echo "Last logs seeing in \"adapter\" container: "
              docker logs adapter
-             echo "Exit now."; exit 1
+             echo "Exit now."
+             exit 1
            fi
           done
 
@@ -109,9 +109,9 @@ jobs:
         run: |
           TARGET_POSTGRES_CONFIG=$(cat <<EOF
           {
-            "host": "host.docker.internal",
+            "host": "postgres",
             "port": 5432,
-            "database": "inextia_2",
+            "database": "platform",
             "user": "postgres",
             "password": "postgres",
             "default_target_schema": "public",
@@ -126,7 +126,7 @@ jobs:
           )
           echo "$TARGET_POSTGRES_CONFIG" > target_postgres_config.json
           echo "Successfully wrote target postgres configuration to target_postgres_config.json"
-         
+
       - name: Create Postgres username/password and db name
         run: docker run -d \
           --name postgres \
@@ -148,10 +148,10 @@ jobs:
             --name tap-rest \
             --net=adapter-test-net \
             -e NODE_ENV=production \
-            makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c 
+            makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
 
       - name: Start Sync and store data to DB
-        run:  docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json
+        run: docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
 
       - name: Start aggregate pipeline
         run: |
