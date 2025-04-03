@@ -230,4 +230,4 @@ jobs:
 
       - name: Show all tables in PostgreSQL
         run: |
-          docker exec -it postgres bash -c "export PGPASSWORD='postgres'; psql -U postgres -d platform -c '\dt'"
+          docker exec -i postgres bash -c "export PGPASSWORD='postgres'; psql -U postgres -d platform -c '\dt'"
