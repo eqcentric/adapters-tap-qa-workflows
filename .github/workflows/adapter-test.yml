@@ -90,7 +90,7 @@ jobs:
         run: |
           for i in {1..30}; do
             # Test connection to the adapter container
-            if curl -s http://adapter:80; then
+            if curl -s http://localhost:80; then
               echo "Adapter is reachable."
               exit 0
             fi
@@ -104,7 +104,7 @@ jobs:
 
       - name: Write data to json
         run: |
-          API_URL="http://adapter/resolve/singer-config"
+          API_URL="http://localhost:80/resolve/singer-config"
           OUTPUT_FILE="tap_config.json"
 
           # Make the API call and get the JSON response
