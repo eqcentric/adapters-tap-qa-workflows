@@ -92,16 +92,26 @@ jobs:
           OUTPUT_FILE="tap_config.json"
 
           # Make the API call and get the JSON response
-          RESPONSE=$(curl -s "$API_URL")
+          RESPONSE=$(curl -s -w "%{http_code}" -o response.json "$API_URL")
 
-          # Check if the API call was successful (you might want to add more robust error handling)
-          if [ $? -eq 0 ]; then
-            # Write the JSON response to the specified file
-            echo "$RESPONSE" > "$OUTPUT_FILE"
-            echo "Successfully wrote data to $OUTPUT_FILE"
+          # Capture the HTTP status code
+          HTTP_STATUS=$(tail -n 1 <<< "$RESPONSE")
+
+          # Check if the HTTP status code is 2xx (success)
+          if [[ "$HTTP_STATUS" -ge 200 && "$HTTP_STATUS" -lt 300 ]]; then
+            # Ensure the response is valid JSON
+            if jq empty response.json 2>/dev/null; then
+              # Write the valid JSON response to the specified file
+              mv response.json "$OUTPUT_FILE"
+              echo "Successfully wrote data to $OUTPUT_FILE"
+            else
+              echo "Error: API response is not valid JSON"
+              exit 1
+            fi
           else
             echo "Error calling API: $API_URL"
-            echo "Response: $RESPONSE"
+            echo "HTTP Status Code: $HTTP_STATUS"
+            echo "Response: $(cat response.json)"
             exit 1
           fi
 
