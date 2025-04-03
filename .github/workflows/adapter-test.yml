@@ -67,7 +67,7 @@ jobs:
           docker build --build-arg GIT_PRIVATE_TOKEN --file ./Dockerfile --tag adapter .
 
       - name: Launch adapter container
-        run: docker run -d --name=adapter --hostname=adapter -p 80:80 --net=adapter-test-net --env-file .env adapter
+        run: docker run -d --name=adapter -w /app --hostname=adapter -p 80:80 --net=adapter-test-net --env-file .env adapter
 
       - name: Show all docker containers
         run: sleep 5 && docker ps
