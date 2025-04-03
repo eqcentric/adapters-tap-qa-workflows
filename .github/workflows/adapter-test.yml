@@ -20,7 +20,7 @@ on:
       test-image:
         type: string
         description: 'Image to use for testing'
-        required: true
+        required: false
       test-options:
         type: string
         description: 'Jest CLI arguments'
@@ -49,15 +49,14 @@ jobs:
         if: '!inputs.adapter-image'
         uses: actions/checkout@v3
 
-      - name: Docker pull adapter image
-        if: 'inputs.adapter-image'
-        run: docker pull ${{ inputs.adapter-image }}
+      - name: Docker pull dbt image
+      - run : docker pull makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
 
-      - name: Docker pull testing image
-        run: docker pull ${{ inputs.test-image }}
+      - name: Docker pull tap sync
+        run: docker pull makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
 
-      - name: Pull mongodb
-        run: docker pull mongo
+      - name: Docker Pull postgres
+        run: docker pull postgres
 
       - name: create a network
         run: docker network create --driver=bridge --subnet=192.168.10.0/24 --gateway=192.168.10.1 adapter-test-net
@@ -75,22 +74,13 @@ jobs:
       - name: View env
         run : cat .env
 
-      - name : Build image
-        if: '!inputs.adapter-image'
+      - name : Build adapter image
         run: |
           export GIT_PRIVATE_TOKEN=${{ secrets.GIT_PRIVATE_TOKEN }}
           docker build --build-arg GIT_PRIVATE_TOKEN --file ./Dockerfile --tag adapter .
 
-      - name: Launch container
-        if: '!inputs.adapter-image'
+      - name: Launch adapter container
         run: docker run -d --name=adapter --hostname=adapter -p 80:80 --net=adapter-test-net --env-file .env adapter
-
-      - name: Launch container
-        if: 'inputs.adapter-image'
-        run: docker run -d --name=adapter --hostname=adapter --net=adapter-test-net --env-file .env ${{ inputs.adapter-image }}
-
-      - name: run mongodb
-        run: docker run -d --name=mongodb --hostname=mongo --net=adapter-test-net -t mongo
 
       - name: show all docker containers
         run: sleep 5 && docker ps
@@ -110,14 +100,92 @@ jobs:
            fi
           done
 
-      - name: Run testing with testing image
-        shell: bash {0}
+      - name: Write data to json
         run: |
-          docker run --name=test --hostname=test --net=adapter-test-net --env-file .env -t ${{ inputs.test-image }} {{ inputs.test-options }}
-          status=$?
-          if test $status -eq 1
-          then
-            echo '--- Container logs ---'
-            docker logs adapter
+          API_URL="http://adapter/resolve/singer-config"
+          OUTPUT_FILE="tap_config.json"
+
+          # Make the API call and get the JSON response
+          RESPONSE=$(curl -s "$API_URL")
+
+          # Check if the API call was successful (you might want to add more robust error handling)
+          if [ $? -eq 0 ]; then
+            # Write the JSON response to the specified file
+            echo "$RESPONSE" > "$OUTPUT_FILE"
+            echo "Successfully wrote data to $OUTPUT_FILE"
+          else
+            echo "Error calling API: $API_URL"
+            echo "Response: $RESPONSE"
             exit 1
+          fi
+
+      - name: Write credential for target postgres
+        run: |
+          TARGET_POSTGRES_CONFIG=$(cat <<EOF
+          {
+            "host": "host.docker.internal",
+            "port": 5432,
+            "database": "inextia_2",
+            "user": "postgres",
+            "password": "postgres",
+            "default_target_schema": "public",
+            "batch_size_rows": 1000,
+            "use_copy": true,
+            "flattening_enabled": true,
+            "flattening_max_depth": 3,
+            "load_method": "upsert",
+            "validate_records": false
+          }
+          EOF
+          )
+          echo "$TARGET_POSTGRES_CONFIG" > target_postgres_config.json
+          echo "Successfully wrote target postgres configuration to target_postgres_config.json"
+         
+      - name: Create Postgres username/password and db name
+        run: docker run -d \
+          --name postgres \
+          --hostname=postgres \
+          --net=adapter-test-net  \
+          -t postgres \
+          -e POSTGRES_USER=postgres \
+          -e POSTGRES_PASSWORD=postgres \
+          -e POSTGRES_DB=platform \
+          -p 5432:5432 \
+          postgres  
+
+      - name: Run Docker Tap Sync
+        run: |
+          docker network create --attachable adapter-test-net || true # Create network if it doesn't exist
+          docker run -d \
+            -p 3002:3000 \
+            --hostname=tap \
+            --name tap-rest \
+            --net=adapter-test-net \
+            -e NODE_ENV=production \
+            makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c 
+
+      - name: Start Sync and store data to DB
+        run:  docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json
+
+      - name: Start aggregate pipeline
+        run: |
+          docker run -d \
+            -v /app/src/dbt_sql:/app/models \
+            -w /app \
+            --rm \
+            --name adapter-test-dbt \
+            makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
+
+          # Wait briefly to check the container status
+          sleep 2
+
+          # Capture the container status
+          status=$(docker inspect -f '{{.State.Running}}' adapter-test-dbt 2>/dev/null)
+
+          if [ "$status" != "true" ]; then
+            echo '--- Container logs ---'
+            docker logs adapter-test-dbt
+            exit 1
+          else
+            echo "✅ Container is running successfully!"
           fi
