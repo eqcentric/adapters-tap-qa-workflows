@@ -197,8 +197,8 @@ jobs:
       
       - name: Copy files to tap sync container
         run: |
-          docker cp /app/tap_config.json tap-rest:/app/tap_config.json
-          docker cp /app/target_postgres_config.json tap-rest:/app/target_postgres_config.json
+          docker cp ./tap_config.json tap-rest:/app/tap_config.json
+          docker cp ./target_postgres_config.json tap-rest:/app/target_postgres_config.json
 
       - name: Start Sync and store data to DB
         run: docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
