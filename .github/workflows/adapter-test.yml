@@ -73,7 +73,6 @@ jobs:
         run: sleep 5 && docker ps
 
       - name: Waiting app to be ready
-        if: 'inputs.waiting-app-start'
         run: |
           for i in {1..60}; do
            timeout 1 curl -I -s localhost:80 | grep HTTP |grep 20 && exit 0 || true;
