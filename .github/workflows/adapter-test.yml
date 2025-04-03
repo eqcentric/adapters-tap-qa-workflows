@@ -168,16 +168,16 @@ jobs:
           echo "Successfully wrote target postgres configuration to target_postgres_config.json"
 
       - name: Create Postgres username/password and db name
-        run: docker run -d \
+        run: |
+          docker run -d \
           --name postgres \
-          --hostname=postgres \
-          --net=adapter-test-net  \
-          -t postgres \
+          --hostname postgres \
+          --net adapter-test-net \
           -e POSTGRES_USER=postgres \
           -e POSTGRES_PASSWORD=postgres \
           -e POSTGRES_DB=platform \
           -p 5432:5432 \
-          postgres  
+          postgres
 
       - name: Run Docker Tap Sync
         run: |
