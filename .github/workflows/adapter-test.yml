@@ -193,8 +193,8 @@ jobs:
       - name: Show all docker containers
         run: sleep 5 && docker ps
 
-      - name: show all files in git runner container
-        run:  
+      - name: List files in the working directory
+        run: ls -al
       
       - name: Start Sync and store data to DB
         run: docker exec -it tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
