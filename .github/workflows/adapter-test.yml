@@ -104,6 +104,7 @@ jobs:
 
       - name: Write Tap Config to json
         run: |
+          source .env
           API_URL="http://localhost:8081/resolve/singer-config"
           OUTPUT_FILE="tap_config.json"
 
