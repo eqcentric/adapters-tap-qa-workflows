@@ -40,7 +40,7 @@ jobs:
         run: docker pull makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
 
       - name: Docker pull tap sync
-        run: docker pull makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
+        run: docker pull makini.azurecr.io/dev-tap-rest-api:d39eaca6c5d8445de314422f84ee7b4d17c37e08
 
       - name: Docker Pull postgres
         run: docker pull postgres
@@ -222,7 +222,7 @@ jobs:
           # Capture the container status
           status=$(docker inspect -f '{{.State.Running}}' adapter-test-dbt 2>/dev/null)
 
-          if [ "$status" != "true" ]; then'
+          if [ "$status" != "true" ]; then
             exit 1
           else
             echo "✅ Container is running successfully!"
