@@ -213,11 +213,11 @@ jobs:
             makini.azurecr.io/test-dbt:8d641796af148f103c3619fc6e1cc5bc43f6c11d
 
           # Wait briefly to check the container status
-          sleep 2
+          sleep 10
 
           # Show logs regardless of the container status
           echo '--- Container logs ---'
-          docker logs adapter-test-dbt
+          docker logs adapter-test-dbt 
 
           # Capture the container status
           status=$(docker inspect -f '{{.State.Running}}' adapter-test-dbt 2>/dev/null)
@@ -231,7 +231,7 @@ jobs:
       - name: Show all files in /app/models of the container
         run: |
           docker exec adapter-test-dbt ls -al /app/models
-          
+
       - name: Show all tables in PostgreSQL
         run: |
           docker exec -i postgres bash -c "export PGPASSWORD='postgres'; psql -U postgres -d platform -c '\dt'"
