@@ -13,18 +13,6 @@ on:
         description: 'github token to install makini vendor'
         required: true
     inputs:
-      adapter-image:
-        type: string
-        description: 'Adapter image to pull for testing'
-        required: false
-      test-image:
-        type: string
-        description: 'Image to use for testing'
-        required: false
-      test-options:
-        type: string
-        description: 'Jest CLI arguments'
-        required: false
       env-file:
         type: string
         description: '.env file contents'
@@ -46,7 +34,6 @@ jobs:
           password: ${{ secrets.AZ_CLIENT_SECRET }}
 
       - name: Checkout code
-        if: '!inputs.adapter-image'
         uses: actions/checkout@v3
 
       - name: Docker pull dbt image
