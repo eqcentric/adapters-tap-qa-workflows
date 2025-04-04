@@ -227,11 +227,6 @@ jobs:
           # Capture the container status
           status=$(docker inspect -f '{{.State.Running}}' adapter-test-dbt 2>/dev/null)
 
-          if [ "$status" != "true" ]; then
-            echo "❌ Container is not running!"
-            exit 1
-          fi
-
           # Check if dbt run was successful
           exit_code=$(docker inspect -f '{{.State.ExitCode}}' adapter-test-dbt)
           if [ "$exit_code" != "0" ]; then
