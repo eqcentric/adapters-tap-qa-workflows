@@ -203,10 +203,10 @@ jobs:
           docker cp ./tap_config.json tap-rest:/app/tap_config.json
           docker cp ./target_postgres_config.json tap-rest:/app/target_postgres_config.json
 
-      - name: Start Sync and store data to DB
+      - name: Sync and store data to DB
         run: docker exec -i tap-rest /bin/bash -c "node dist/tap.js --config tap_config.json | target-postgres --config target_postgres_config.json"
       
-      - name: Start aggregate pipeline
+      - name: Aggregate DBT pipeline
         run: |
           docker run -d \
             -v ./src/dbt_sql:/app/models \
@@ -221,16 +221,27 @@ jobs:
 
           # Show logs regardless of the container status
           echo '--- Container logs ---'
-          docker logs adapter-test-dbt 
+          docker logs adapter-test-dbt --follow
 
           # Capture the container status
           status=$(docker inspect -f '{{.State.Running}}' adapter-test-dbt 2>/dev/null)
 
           if [ "$status" != "true" ]; then
+            echo "❌ Container is not running!"
+            exit 1
+          fi
+
+          # Check if dbt run was successful
+          exit_code=$(docker inspect -f '{{.State.ExitCode}}' adapter-test-dbt)
+          if [ "$exit_code" != "0" ]; then
+            echo "❌ DBT run failed with exit code: $exit_code"
             exit 1
           else
-            echo "✅ Container is running successfully!"
+            echo "✅ DBT run completed successfully!"
           fi
+
+      - name: List files in the working directory
+        run: docker exec adapter-test-dbt ls -al /app
 
       - name: Show all files in /app/models of the container
         run: |
