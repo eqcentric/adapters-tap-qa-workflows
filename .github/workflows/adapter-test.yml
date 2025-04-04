@@ -22,7 +22,7 @@ on:
         description: 'Waiting Node.js application to start'
         required: false
 env:
-  DBT_IMAGE_TAG: 4abe0a548d8d1437e8699b9bbdcd6a49324a6503
+  DBT_IMAGE_TAG: c9edc8a9f19eec09cb5d577d00dc061649226efa
   TAP_IMAGE_TAG: 0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
 
 jobs:
