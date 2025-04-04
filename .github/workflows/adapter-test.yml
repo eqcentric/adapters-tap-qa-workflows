@@ -21,6 +21,9 @@ on:
         type: boolean
         description: 'Waiting Node.js application to start'
         required: false
+env:
+  DBT_IMAGE_TAG: 4abe0a548d8d1437e8699b9bbdcd6a49324a6503
+  TAP_IMAGE_TAG: 0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
 
 jobs:
   integration-test:
@@ -37,10 +40,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Docker pull dbt image
-        run: docker pull makini.azurecr.io/test-dbt:f3ba5e6df6dd7525e6b7cb3ffcfdb14cbe951333
+        run: docker pull makini.azurecr.io/test-dbt:${{ env.DBT_IMAGE_TAG }}
 
       - name: Docker pull tap sync
-        run: docker pull makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
+        run: docker pull makini.azurecr.io/dev-tap-rest-api:${{ env.TAP_IMAGE_TAG }}
 
       - name: Docker Pull postgres
         run: docker pull postgres
@@ -187,7 +190,7 @@ jobs:
             --name tap-rest \
             --net=adapter-test-net \
             -e NODE_ENV=production \
-            makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
+            makini.azurecr.io/dev-tap-rest-api:{{ env.TAP_IMAGE_TAG }}
 
       - name: Show all docker containers
         run: sleep 5 && docker ps
@@ -210,7 +213,7 @@ jobs:
             -w /app \
             --rm \
             --name adapter-test-dbt \
-            makini.azurecr.io/test-dbt:f3ba5e6df6dd7525e6b7cb3ffcfdb14cbe951333 \
+            makini.azurecr.io/test-dbt:${{ env.DBT_IMAGE_TAG }} \
             dbt run
 
           # Wait briefly to check the container status

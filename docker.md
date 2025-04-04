@@ -1,4 +1,4 @@
 CONTAINER ID   IMAGE                                                                         COMMAND                  CREATED          STATUS          PORTS                                       NAMES
-72834eac79be   makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c   "docker-entrypoint.s…"   6 seconds ago    Up 5 seconds    0.0.0.0:3002->3000/tcp, :::3002->3000/tcp   tap-rest
-929cc720a8f3   postgres                                                                      "docker-entrypoint.s…"   6 seconds ago    Up 5 seconds    0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   postgres
-cb5ca85163bf   adapter                                                                       "docker-entrypoint.s…"   15 seconds ago   Up 14 seconds   0.0.0.0:80->80/tcp, :::80->80/tcp           adapter
+f8a3b08a1c46   makini.azurecr.io/dev-tap-rest-api:0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c   "docker-entrypoint.s…"   6 seconds ago    Up 5 seconds    0.0.0.0:3002->3000/tcp, :::3002->3000/tcp   tap-rest
+801e8c4e3586   postgres                                                                      "docker-entrypoint.s…"   6 seconds ago    Up 5 seconds    0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   postgres
+a4c380d082a1   adapter                                                                       "docker-entrypoint.s…"   15 seconds ago   Up 14 seconds   0.0.0.0:80->80/tcp, :::80->80/tcp           adapter
