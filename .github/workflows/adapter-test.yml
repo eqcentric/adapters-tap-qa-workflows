@@ -218,6 +218,7 @@ jobs:
             dbt run
 
           # Show logs regardless of the container status
+          docker wait adapter-test-dbt
           exit_code=$?
 
           # Show logs regardless of the result
