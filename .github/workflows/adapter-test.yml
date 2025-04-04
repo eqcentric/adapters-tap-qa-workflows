@@ -217,18 +217,15 @@ jobs:
             makini.azurecr.io/test-dbt:${{ env.DBT_IMAGE_TAG }} \
             dbt run
 
-          # Wait briefly to check the container status
-          sleep 2
-
           # Show logs regardless of the container status
-          echo '--- Container logs ---'
-          docker logs adapter-test-dbt --follow
+          exit_code=$?
 
-          # Capture the container status
-          status=$(docker inspect -f '{{.State.Running}}' adapter-test-dbt 2>/dev/null)
+          # Show logs regardless of the result
+          echo '--- Container logs ---'
+          docker logs adapter-test-dbt 2>/dev/null || true  # Ignore errors if logs are unavailable
 
           # Check if dbt run was successful
-          if [ "$status" != "true" ]; then
+          if [ "$exit_code" -ne 0 ]; then
             echo "❌ DBT run failed with exit code: $exit_code"
             exit 1
           else
