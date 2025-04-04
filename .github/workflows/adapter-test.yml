@@ -22,7 +22,7 @@ on:
         description: 'Waiting Node.js application to start'
         required: false
 env:
-  DBT_IMAGE_TAG: c9edc8a9f19eec09cb5d577d00dc061649226efa
+  DBT_IMAGE_TAG: 25641716e582541eab182cae17c285112c6d77bd
   TAP_IMAGE_TAG: 0d5dd9c6a7add2cfe8c64d76cb0ca3b781a8480c
 
 jobs:
@@ -213,6 +213,7 @@ jobs:
             -w /app \
             --rm \
             --name adapter-test-dbt \
+            --net adapter-test-net \
             makini.azurecr.io/test-dbt:${{ env.DBT_IMAGE_TAG }} \
             dbt run
 
