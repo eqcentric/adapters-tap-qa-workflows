@@ -228,8 +228,7 @@ jobs:
           status=$(docker inspect -f '{{.State.Running}}' adapter-test-dbt 2>/dev/null)
 
           # Check if dbt run was successful
-          exit_code=$(docker inspect -f '{{.State.ExitCode}}' adapter-test-dbt)
-          if [ "$exit_code" != "0" ]; then
+          if [ "$status" != "true" ]; then
             echo "❌ DBT run failed with exit code: $exit_code"
             exit 1
           else
