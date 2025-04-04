@@ -190,7 +190,7 @@ jobs:
             --name tap-rest \
             --net=adapter-test-net \
             -e NODE_ENV=production \
-            makini.azurecr.io/dev-tap-rest-api:{{ env.TAP_IMAGE_TAG }}
+            makini.azurecr.io/dev-tap-rest-api:${{ env.TAP_IMAGE_TAG }}
 
       - name: Show all docker containers
         run: sleep 5 && docker ps
