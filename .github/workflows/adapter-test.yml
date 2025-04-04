@@ -236,12 +236,12 @@ jobs:
             echo "✅ DBT run completed successfully!"
           fi
 
-      - name: List files in the working directory
-        run: docker exec adapter-test-dbt ls -al /app
+      # - name: List files in the working directory
+      #   run: docker exec adapter-test-dbt ls -al /app
 
-      - name: Show all files in /app/models of the container
-        run: |
-          docker exec adapter-test-dbt ls -al /app/models
+      # - name: Show all files in /app/models of the container
+      #   run: |
+      #     docker exec adapter-test-dbt ls -al /app/models
       
       - name: Show all tables in PostgreSQL
         run: |
